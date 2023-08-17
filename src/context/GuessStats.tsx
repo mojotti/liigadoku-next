@@ -22,7 +22,7 @@ type PutGuess = {
   teamPair: string;
   guessedPlayer: PlayerShortVersion;
   isCorrect: boolean;
-  gameId: string;
+  gameId?: string;
 };
 
 interface ContextProps {
@@ -60,6 +60,11 @@ export const GuessStatsContextProvider: FC<PropsWithChildren> = ({
   }: PutGuess) => {
     if (!date) {
       console.error("No date provided, cannot report!");
+      return;
+    }
+
+    if (!gameId) {
+      console.error("No game id provided, cannot report!");
       return;
     }
 

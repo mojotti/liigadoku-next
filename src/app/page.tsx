@@ -27,7 +27,6 @@ export type InitialData = {
       person: string;
     }[]
   >;
-  gameId: string;
 };
 
 async function getInitialData() {
@@ -53,15 +52,8 @@ async function getInitialData() {
     });
   });
 
-  const urlDate = dokuJson.date.replaceAll(".", "-");
-  const gameIdRequest = fetch(`${restAPI()}games/new/${urlDate}`);
+  const respsRaw = await Promise.all(promises);
 
-  const [gameIdResponse, ...respsRaw] = await Promise.all([
-    gameIdRequest,
-    ...promises,
-  ]);
-
-  const gameId = (await gameIdResponse.json()).gameId;
   const resps = (await Promise.all(
     respsRaw.map((resp) => resp.json())
   )) as TeamPairPlayers[];
@@ -75,7 +67,6 @@ async function getInitialData() {
     players,
     dokuOfTheDay: dokuJson,
     answers,
-    gameId,
   };
 }
 

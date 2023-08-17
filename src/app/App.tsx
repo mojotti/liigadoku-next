@@ -14,6 +14,8 @@ import { PlayerList } from "@/components/PlayerList";
 import { GameGrid } from "@/components/GameGrid";
 import { formatScoreText } from "@/utils/score-text";
 import { InitialData } from "./page";
+import { useAsync } from "react-use";
+import { restAPI } from "@/utils/base-url";
 
 export type Guess = {
   status: boolean;
@@ -35,10 +37,17 @@ export type Score = {
 };
 
 export const App = ({ initialData }: { initialData: InitialData }) => {
-  const { players, answers, dokuOfTheDay, gameId } = initialData;
+  const { players, answers, dokuOfTheDay } = initialData;
   const [filteredPlayers, setFilteredPlayers] = React.useState<
     PlayerShortVersion[]
   >([]);
+
+  const { loading: isLoadingGame, value: gameId } = useAsync(async () => {
+    const urlDate = dokuOfTheDay.date.replaceAll(".", "-");
+    const gameIdResponse = await fetch(`${restAPI()}games/new/${urlDate}`);
+
+    return (await gameIdResponse.json()).gameId as string;
+  }, [dokuOfTheDay.date]);
 
   const [currentGuess, setCurrentGuess] = React.useState<CurrentGuess>();
 
@@ -115,7 +124,7 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
         guessedPlayer: player,
         teamPair: currentGuess.teams.sort().join("-"),
         isCorrect,
-        gameId
+        gameId,
       });
     },
     [currentGuess, dokuOfTheDay, gameState, putGuess, score, gameId]
@@ -139,7 +148,7 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
           onFilter={onFilter}
         />
       </Modal>
-      {
+      {!isLoadingGame && (
         <>
           <GameGrid
             xTeams={dokuOfTheDay?.xTeams ?? []}
@@ -151,7 +160,8 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
           />
           <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
         </>
-      }
+      )}
+      {isLoadingGame && <h2>Ladataan...</h2>}
       {score.guesses === 9 && (
         <Stack gap={"1rem"}>
           <Tooltip
