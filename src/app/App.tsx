@@ -131,7 +131,7 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
   );
 
   return (
-    <Stack className="container" alignItems="center" rowGap="1rem">
+    <Stack className="container" alignItems="center" rowGap="1.5rem">
       <Header dokuOfTheDay={dokuOfTheDay} />
 
       <Modal
@@ -146,22 +146,20 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
           filteredPlayers={filteredPlayers}
           onPlayerClick={onPlayerClick}
           onFilter={onFilter}
+          isLoadingGameId={isLoadingGame}
         />
       </Modal>
-      {!isLoadingGame && (
-        <>
-          <GameGrid
-            xTeams={dokuOfTheDay?.xTeams ?? []}
-            yTeams={dokuOfTheDay?.yTeams ?? []}
-            onGuess={onGuessStart}
-            gameState={gameState}
-            date={dokuOfTheDay?.date}
-            gameOver={score.guesses === 9}
-          />
-          <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
-        </>
-      )}
-      {isLoadingGame && <h2>Ladataan...</h2>}
+      <>
+        <GameGrid
+          xTeams={dokuOfTheDay?.xTeams ?? []}
+          yTeams={dokuOfTheDay?.yTeams ?? []}
+          onGuess={onGuessStart}
+          gameState={gameState}
+          date={dokuOfTheDay?.date}
+          gameOver={score.guesses === 9}
+        />
+        <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
+      </>
       {score.guesses === 9 && (
         <Stack gap={"1rem"}>
           <Tooltip
