@@ -33,4 +33,7 @@ module.exports = async (phase, { defaultConfig }) =>
     async headers() {
       return createCSPHeaders(phase);
     },
+    experimental: {
+      serverActions: true,
+    },
   });

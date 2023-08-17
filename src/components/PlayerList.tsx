@@ -1,4 +1,5 @@
 /* eslint-disable react/display-name */
+"use client";
 import React from "react";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";

@@ -1,7 +1,7 @@
+"use client";
 import { PlayerShortVersion } from "@/types";
 import { restAPI } from "@/utils/base-url";
 import React, { createContext, FC, PropsWithChildren, useContext } from "react";
-
 
 export type Stats = {
   isCorrect: boolean;
@@ -17,6 +17,14 @@ export type TeamPairGuesses = {
   teamPair: string;
 };
 
+type PutGuess = {
+  date?: string;
+  teamPair: string;
+  guessedPlayer: PlayerShortVersion;
+  isCorrect: boolean;
+  gameId: string;
+};
+
 interface ContextProps {
   stats: Record<string, TeamPairGuesses | undefined>;
   setStats: React.Dispatch<
@@ -27,12 +35,7 @@ interface ContextProps {
     teamPair,
     guessedPlayer,
     isCorrect,
-  }: {
-    date?: string;
-    teamPair: string;
-    guessedPlayer: PlayerShortVersion;
-    isCorrect: boolean;
-  }) => Promise<void>;
+  }: PutGuess) => Promise<void>;
 }
 
 const GuessStatsContext = createContext<ContextProps>({
@@ -53,12 +56,8 @@ export const GuessStatsContextProvider: FC<PropsWithChildren> = ({
     teamPair,
     guessedPlayer,
     isCorrect,
-  }: {
-    date?: string;
-    teamPair: string;
-    guessedPlayer: PlayerShortVersion;
-    isCorrect: boolean;
-  }) => {
+    gameId,
+  }: PutGuess) => {
     if (!date) {
       console.error("No date provided, cannot report!");
       return;
@@ -73,6 +72,7 @@ export const GuessStatsContextProvider: FC<PropsWithChildren> = ({
         name: guessedPlayer.name,
         person: guessedPlayer.person,
         isCorrect,
+        gameId
       }),
     };
 

@@ -1,3 +1,4 @@
+"use client";
 import React, { useCallback } from "react";
 import "./App.css";
 import Modal from "@mui/material/Modal";
@@ -6,13 +7,13 @@ import ShareIcon from "@mui/icons-material/Share";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { useGameInitContext } from "@/context/GameInit";
 import { PlayerShortVersion } from "@/types";
 import { useGuessStatsContext } from "@/context/GuessStats";
 import { Header } from "@/components/Header";
 import { PlayerList } from "@/components/PlayerList";
 import { GameGrid } from "@/components/GameGrid";
 import { formatScoreText } from "@/utils/score-text";
+import { InitialData } from "./page";
 
 export type Guess = {
   status: boolean;
@@ -33,9 +34,8 @@ export type Score = {
   guesses: number;
 };
 
-export const App = () => {
-  const { players, answers, dokuOfTheDay, isLoadingInitData } =
-    useGameInitContext();
+export const App = ({ initialData }: { initialData: InitialData }) => {
+  const { players, answers, dokuOfTheDay, gameId } = initialData;
   const [filteredPlayers, setFilteredPlayers] = React.useState<
     PlayerShortVersion[]
   >([]);
@@ -115,9 +115,10 @@ export const App = () => {
         guessedPlayer: player,
         teamPair: currentGuess.teams.sort().join("-"),
         isCorrect,
+        gameId
       });
     },
-    [currentGuess, dokuOfTheDay, gameState, putGuess, score]
+    [currentGuess, dokuOfTheDay, gameState, putGuess, score, gameId]
   );
 
   return (
@@ -138,7 +139,7 @@ export const App = () => {
           onFilter={onFilter}
         />
       </Modal>
-      {!isLoadingInitData && (
+      {
         <>
           <GameGrid
             xTeams={dokuOfTheDay?.xTeams ?? []}
@@ -150,8 +151,7 @@ export const App = () => {
           />
           <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
         </>
-      )}
-      {isLoadingInitData && <h2>Ladataan...</h2>}
+      }
       {score.guesses === 9 && (
         <Stack gap={"1rem"}>
           <Tooltip
