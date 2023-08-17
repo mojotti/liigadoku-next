@@ -1,12 +1,12 @@
 import httpProxy from "http-proxy";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-const { GRAPHQL_ENDPOINT: api } = process.env;
-
 export const config = {
   api: {
     bodyParser: false,
   },
+  runtime: "edge",
+  preferredRegion: "arn1", // eu-north-1
 };
 
 const proxy = httpProxy.createProxyServer({});
