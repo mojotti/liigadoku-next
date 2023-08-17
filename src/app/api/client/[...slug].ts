@@ -5,7 +5,6 @@ export const config = {
   api: {
     bodyParser: false,
   },
-  preferredRegion: "arn1", // eu-north-1
 };
 
 const proxy = httpProxy.createProxyServer({});
