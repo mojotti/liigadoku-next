@@ -5,7 +5,6 @@ export const config = {
   api: {
     bodyParser: false,
   },
-  runtime: "edge",
   preferredRegion: "arn1", // eu-north-1
 };
 
