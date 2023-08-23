@@ -88,16 +88,18 @@ export const Results = React.forwardRef<HTMLDivElement, Props>(
                   >
                     % (kpl)
                   </Typography>
-                  <Typography
+                  {/* <Typography
                     gridArea="isCorrect"
                     display="flex"
                     flexDirection="row"
                     fontWeight="bold"
                     gap="2px"
                     color="rgb(19, 18, 18)"
-                  >
-                    <CheckIcon />
-                  </Typography>
+                  > */}
+                  <CheckIcon
+                    sx={{ gridArea: "isCorrect", color: "rgb(19, 18, 18)" }}
+                  />
+                  {/* </Typography> */}
                 </Grid>
               </ListSubheader>
               {sortedList.map((item) => {

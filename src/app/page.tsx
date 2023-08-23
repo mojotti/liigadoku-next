@@ -29,6 +29,12 @@ export type InitialData = {
   >;
 };
 
+const initialDoku: LiigadokuOfTheDay = {
+  date: "-",
+  xTeams: [],
+  yTeams: [],
+};
+
 async function getInitialData() {
   const response = await fetch(`${restAPI()}players/all`, {
     next: { revalidate: 24 * 3600 },
@@ -40,7 +46,7 @@ async function getInitialData() {
   const dokuResponse = await fetch(`${restAPI()}liigadoku-of-the-day`, {
     next: { revalidate: 3600 },
   });
-  const dokuJson = await dokuResponse.json();
+  const dokuJson = (await dokuResponse.json()) ?? initialDoku;
 
   const matchUps = formMatchUps(dokuJson);
 

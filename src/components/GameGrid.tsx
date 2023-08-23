@@ -10,11 +10,12 @@ import { IconButton, useMediaQuery } from "@mui/material";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { useGuessStatsContext } from "../context/GuessStats";
 import { GameState, Guess } from "@/app/App";
+import Image from "next/image";
 
 const getPictureUrl = (team: string) => {
   const teamNormalized = team.toLowerCase().replace(new RegExp(/ä/g), "a");
 
-  return `./logos/${teamNormalized}.png`;
+  return `/logos/${teamNormalized}.png`;
 };
 
 const borderRadius = (item: string) => {
@@ -34,10 +35,10 @@ const borderRadius = (item: string) => {
 
 const getImg = (team: string) => {
   const img = (
-    <img
+    <Image
       src={getPictureUrl(team)}
-      width="70px"
-      height="70px"
+      width={70}
+      height={70}
       alt={getPictureUrl(team)}
     />
   );
@@ -99,7 +100,7 @@ export const GameGrid = ({
   const isOverMediumSize = useMediaQuery("(min-width: 460px)");
 
   return (
-    <>
+    <div>
       <Modal
         open={open}
         onClose={() => {
@@ -242,6 +243,6 @@ export const GameGrid = ({
           })
         )}
       </div>
-    </>
+    </div>
   );
 };

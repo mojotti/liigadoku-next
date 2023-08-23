@@ -1,6 +1,6 @@
 /* eslint-disable react/display-name */
 "use client";
-import React from "react";
+import React, { useTransition } from "react";
 import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -11,17 +11,38 @@ import { useState } from "react";
 import Typography from "@mui/material/Typography";
 import { PlayerShortVersion } from "@/types";
 import { CurrentGuess } from "@/app/App";
+import { putGuessAction } from "@/app/actions";
 
 function renderRow(
   props: ListChildComponentProps,
-  onPlayerClick: (player: PlayerShortVersion) => void
+  onPlayerClick: (player: PlayerShortVersion) => void,
+  startTransition: React.TransitionStartFunction,
+  gameId?: string,
+  currentGuess?: CurrentGuess,
+  date?: string
 ) {
   const { index, style } = props;
   const item = props.data[index] as PlayerShortVersion;
 
   return (
     <ListItem style={style} key={index} component="div" disablePadding>
-      <ListItemButton onClick={() => onPlayerClick(item)}>
+      <ListItemButton
+        onClick={() => {
+          onPlayerClick(item);
+          const correctPersons =
+            currentGuess?.correctAnswers.map((p) => p.person) ?? [];
+          const isCorrect = correctPersons.includes(item.person);
+
+          startTransition(() => {
+            putGuessAction({
+              gameId,
+              person: item.person,
+              teamPair: currentGuess?.teams.sort().join("-") ?? "",
+              date,
+            });
+          });
+        }}
+      >
         <ListItemText
           primary={item.name}
           secondary={item.dateOfBirth}
@@ -39,6 +60,8 @@ type Props = {
   onFilter: (filter: string) => void;
   currentGuess?: CurrentGuess;
   isLoadingGameId: boolean;
+  gameId?: string;
+  date?: string;
 };
 
 export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
@@ -50,9 +73,13 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
       onFilter,
       onPlayerClick,
       isLoadingGameId,
+      gameId,
+      date,
     },
     ref
   ) => {
+    let [isPending, startTransition] = useTransition();
+
     const [searchText, setSearchText] = useState<string>("");
 
     const items =
@@ -64,6 +91,7 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
 
     return (
       <Box
+        tabIndex={-1}
         boxShadow={2}
         ref={ref}
         sx={{
@@ -142,7 +170,16 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
             itemCount={items.length}
             overscanCount={5}
           >
-            {(props) => renderRow(props, onPlayerClick)}
+            {(props) =>
+              renderRow(
+                props,
+                onPlayerClick,
+                startTransition,
+                gameId,
+                currentGuess,
+                date
+              )
+            }
           </FixedSizeList>
         )}
       </Box>

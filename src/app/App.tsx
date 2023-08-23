@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import "./App.css";
 import Modal from "@mui/material/Modal";
 import Stack from "@mui/material/Stack";
@@ -14,7 +14,7 @@ import { PlayerList } from "@/components/PlayerList";
 import { GameGrid } from "@/components/GameGrid";
 import { formatScoreText } from "@/utils/score-text";
 import { InitialData } from "./page";
-import { useAsync } from "react-use";
+import { useAsync, useLocalStorage } from "react-use";
 import { restAPI } from "@/utils/base-url";
 
 export type Guess = {
@@ -36,11 +36,27 @@ export type Score = {
   guesses: number;
 };
 
+type Local = {
+  score: Score;
+  gameState: GameState;
+};
+
+const initialScore = {
+  correctAnswers: 0,
+  guesses: 0,
+};
+
 export const App = ({ initialData }: { initialData: InitialData }) => {
   const { players, answers, dokuOfTheDay } = initialData;
+  const { fetchStats } = useGuessStatsContext();
+
+  const [isLoadingLocal, setLoadingLocal] = React.useState(true);
+
   const [filteredPlayers, setFilteredPlayers] = React.useState<
     PlayerShortVersion[]
   >([]);
+
+  const [local, setLocal] = useLocalStorage<Local>(dokuOfTheDay?.date ?? "-");
 
   const { loading: isLoadingGame, value: gameId } = useAsync(async () => {
     const urlDate = dokuOfTheDay.date.replaceAll(".", "-");
@@ -50,6 +66,8 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
   }, [dokuOfTheDay.date]);
 
   const [currentGuess, setCurrentGuess] = React.useState<CurrentGuess>();
+  const [open, setOpen] = React.useState(false);
+  const [tooltipOpen, setTooltipOpen] = React.useState(false);
 
   const [score, setScore] = React.useState<Score>({
     correctAnswers: 0,
@@ -57,8 +75,20 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
   });
 
   const [gameState, setGameState] = React.useState<GameState>({});
-  const [open, setOpen] = React.useState(false);
-  const [tooltipOpen, setTooltipOpen] = React.useState(false);
+
+  useEffect(() => {
+    if (dokuOfTheDay) {
+      fetchStats(dokuOfTheDay.date);
+    }
+  }, [dokuOfTheDay, fetchStats]);
+
+  useEffect(() => {
+    if (local) {
+      setScore(local.score);
+      setGameState(local.gameState);
+      setLoadingLocal(false);
+    }
+  }, [local]);
 
   const onGuessStart = useCallback(
     (xTeam: string, yTeam: string, x: number, y: number) => {
@@ -105,18 +135,21 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
       const correctPersons = currentGuess.correctAnswers.map((p) => p.person);
       const isCorrect = correctPersons.includes(player.person);
 
-      setGameState({
+      const { gameState = {}, score = initialScore } = local ?? {};
+      const state = {
         ...gameState,
         [currentGuess.gridItem.join("-")]: {
           status: isCorrect,
           name: player.name,
           person: player.person,
         },
-      });
-      setScore({
+      };
+      const newScore = {
         correctAnswers: score.correctAnswers + +isCorrect,
         guesses: score.guesses + 1,
-      });
+      };
+      setLocal({ gameState: state, score: newScore });
+      setOpen(false);
       setOpen(false);
       // do not wait on purpose
       putGuess({
@@ -127,7 +160,7 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
         gameId,
       });
     },
-    [currentGuess, dokuOfTheDay, gameState, putGuess, score, gameId]
+    [currentGuess, setLocal, local, putGuess, dokuOfTheDay?.date, gameId]
   );
 
   return (
@@ -147,45 +180,52 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
           onPlayerClick={onPlayerClick}
           onFilter={onFilter}
           isLoadingGameId={isLoadingGame}
+          gameId={gameId}
+          date={dokuOfTheDay.date}
         />
       </Modal>
-      <>
-        <GameGrid
-          xTeams={dokuOfTheDay?.xTeams ?? []}
-          yTeams={dokuOfTheDay?.yTeams ?? []}
-          onGuess={onGuessStart}
-          gameState={gameState}
-          date={dokuOfTheDay?.date}
-          gameOver={score.guesses === 9}
-        />
-        <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
-      </>
-      {score.guesses === 9 && (
-        <Stack gap={"1rem"}>
-          <Tooltip
-            title={
-              <Typography variant="body2">
-                {"Kopioitu leikepöydälle"}
-              </Typography>
-            }
-            placement="top"
-            open={tooltipOpen}
-          >
-            <Button
-              variant="contained"
-              startIcon={<ShareIcon fontSize="small" />}
-              onClick={() => {
-                setTooltipOpen(true);
-                navigator.clipboard.writeText(
-                  formatScoreText(gameState, score, dokuOfTheDay)
-                );
-                setTimeout(() => setTooltipOpen(false), 2000);
-              }}
-            >
-              <>{"Kopioi tulos"}</>
-            </Button>
-          </Tooltip>
-        </Stack>
+      {isLoadingGame && <Typography variant="h6">{"Ladataan..."}</Typography>}
+      {!isLoadingGame && (
+        <>
+          <>
+            <GameGrid
+              xTeams={dokuOfTheDay?.xTeams ?? []}
+              yTeams={dokuOfTheDay?.yTeams ?? []}
+              onGuess={onGuessStart}
+              gameState={gameState}
+              date={dokuOfTheDay?.date}
+              gameOver={score.guesses === 9}
+            />
+            <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
+          </>
+          {score.guesses === 9 && (
+            <Stack gap={"1rem"}>
+              <Tooltip
+                title={
+                  <Typography variant="body2">
+                    {"Kopioitu leikepöydälle"}
+                  </Typography>
+                }
+                placement="top"
+                open={tooltipOpen}
+              >
+                <Button
+                  variant="contained"
+                  startIcon={<ShareIcon fontSize="small" />}
+                  onClick={() => {
+                    setTooltipOpen(true);
+                    navigator.clipboard.writeText(
+                      formatScoreText(gameState, score, dokuOfTheDay)
+                    );
+                    setTimeout(() => setTooltipOpen(false), 2000);
+                  }}
+                >
+                  <>{"Kopioi tulos"}</>
+                </Button>
+              </Tooltip>
+            </Stack>
+          )}
+        </>
       )}
     </Stack>
   );
