@@ -59,7 +59,6 @@ type Props = {
   onPlayerClick: (player: PlayerShortVersion) => void;
   onFilter: (filter: string) => void;
   currentGuess?: CurrentGuess;
-  isLoadingGameId: boolean;
   gameId?: string;
   date?: string;
 };
@@ -72,7 +71,6 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
       filteredPlayers,
       onFilter,
       onPlayerClick,
-      isLoadingGameId,
       gameId,
       date,
     },
@@ -111,16 +109,7 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
           },
         }}
       >
-        {isLoadingGameId && (
-          <Typography
-            variant="h6"
-            sx={{ padding: "1rem 1rem 0 1rem" }}
-            color="rgb(19, 18, 18)"
-          >
-            Ladataan pelaajia...
-          </Typography>
-        )}
-        {!isLoadingGameId && currentGuess && (
+        {currentGuess && (
           <>
             <Typography
               variant="h6"

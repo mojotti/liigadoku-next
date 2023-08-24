@@ -10,6 +10,8 @@ import { IconButton, useMediaQuery } from "@mui/material";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import { useGuessStatsContext } from "../context/GuessStats";
 import { GameState, Guess } from "@/app/App";
+import CircularProgress from "@mui/material/CircularProgress";
+
 import Image from "next/image";
 
 const getPictureUrl = (team: string) => {
@@ -53,6 +55,7 @@ export const GameGrid = ({
   gameState,
   date,
   gameOver,
+  isLoadingGame,
 }: {
   onGuess: (xTeam: string, yTeam: string, x: number, y: number) => void;
   xTeams: string[];
@@ -60,6 +63,7 @@ export const GameGrid = ({
   gameState: GameState;
   date?: string;
   gameOver: boolean;
+  isLoadingGame: boolean;
 }) => {
   const [currentlyOpenStats, setCurrentlyOpenStats] = React.useState<{
     teamPair: string;
@@ -141,106 +145,114 @@ export const GameGrid = ({
             {getImg(yTeam)}
           </Grid>
         ))}
-        {xTeams.map((xTeam, i) =>
-          yTeams.map((yTeam, j) => {
-            const guess = gameState[`${i}-${j}`];
+        {!isLoadingGame &&
+          xTeams.map((xTeam, i) =>
+            yTeams.map((yTeam, j) => {
+              const guess = gameState[`${i}-${j}`];
 
-            return (
-              <Grid
-                key={`xTeam${i}yTeam${j}`}
-                item
-                sx={{
-                  gridArea: `xTeam${i}yTeam${j}`,
-                  background:
-                    guess?.status != null
-                      ? guess.status
-                        ? "#01796F"
-                        : "#BD3039"
-                      : "none",
-                  borderRadius: borderRadius(`xTeam${i}yTeam${j}`),
-                  overflow: "hidden",
-                  margin: "2px",
-                  flexDirection: "column",
-                }}
-                className={"innerGridItem"}
-              >
-                <Stack
-                  flexDirection="column"
-                  justifyContent="space-between"
-                  flexGrow={1}
+              return (
+                <Grid
+                  key={`xTeam${i}yTeam${j}`}
+                  item
+                  sx={{
+                    gridArea: `xTeam${i}yTeam${j}`,
+                    background:
+                      guess?.status != null
+                        ? guess.status
+                          ? "#01796F"
+                          : "#BD3039"
+                        : "none",
+                    borderRadius: borderRadius(`xTeam${i}yTeam${j}`),
+                    overflow: "hidden",
+                    margin: "2px",
+                    flexDirection: "column",
+                  }}
+                  className={"innerGridItem"}
                 >
-                  <Stack flexDirection="row" justifyContent="space-between">
+                  <Stack
+                    flexDirection="column"
+                    justifyContent="space-between"
+                    flexGrow={1}
+                  >
+                    <Stack flexDirection="row" justifyContent="space-between">
+                      {guess && (
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            background: "#111010",
+                            borderBottomRightRadius: "5px",
+                            padding: "3px",
+                            height: "min-content",
+                            fontSize: isOverMediumSize ? "14px" : "12px",
+                          }}
+                        >
+                          {getPercentage(xTeam, yTeam, guess)}
+                        </Typography>
+                      )}
+                      {guess && gameOver && (
+                        <IconButton
+                          onClick={() => {
+                            const sortedTeamPair = [xTeam, yTeam]
+                              .sort()
+                              .join("-");
+                            const teamPair = [xTeam, yTeam].join(" - ");
+                            setCurrentlyOpenStats({ sortedTeamPair, teamPair });
+                            setOpen(true);
+                          }}
+                          sx={{
+                            color: "#FFF",
+                            padding: "2px",
+                            background: "rgba(0, 0, 0, 0.4)",
+                            margin: "1px 1px 0 0",
+                          }}
+                        >
+                          <BarChartIcon
+                            fontSize={isOverMediumSize ? "large" : "medium"}
+                          />
+                        </IconButton>
+                      )}
+                    </Stack>
                     {guess && (
                       <Typography
                         variant="body2"
-                        sx={{
-                          background: "#111010",
-                          borderBottomRightRadius: "5px",
-                          padding: "3px",
-                          height: "min-content",
-                          fontSize: isOverMediumSize ? "14px" : "12px",
-                        }}
+                        p="1px"
+                        overflow="hidden"
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                        flexGrow={1}
+                        fontSize={isOverMediumSize ? "14px" : "12px"}
                       >
-                        {getPercentage(xTeam, yTeam, guess)}
+                        {guess.name}
                       </Typography>
                     )}
-                    {guess && gameOver && (
-                      <IconButton
-                        onClick={() => {
-                          const sortedTeamPair = [xTeam, yTeam]
-                            .sort()
-                            .join("-");
-                          const teamPair = [xTeam, yTeam].join(" - ");
-                          setCurrentlyOpenStats({ sortedTeamPair, teamPair });
-                          setOpen(true);
-                        }}
-                        sx={{
-                          color: "#FFF",
-                          padding: "2px",
-                          background: "rgba(0, 0, 0, 0.4)",
-                          margin: "1px 1px 0 0",
-                        }}
-                      >
-                        <BarChartIcon
-                          fontSize={isOverMediumSize ? "large" : "medium"}
-                        />
-                      </IconButton>
-                    )}
                   </Stack>
-                  {guess && (
-                    <Typography
-                      variant="body2"
-                      p="1px"
-                      overflow="hidden"
-                      display="flex"
-                      justifyContent="center"
-                      alignItems="center"
-                      flexGrow={1}
-                      fontSize={isOverMediumSize ? "14px" : "12px"}
-                    >
-                      {guess.name}
-                    </Typography>
+                  {!guess && (
+                    <Button
+                      onClick={() => {
+                        onGuess(xTeam, yTeam, i, j);
+                      }}
+                      sx={{
+                        background: "#7793d8",
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: 0,
+                        "&:hover": {
+                          background: "#76e7f4",
+                        },
+                      }}
+                    />
                   )}
-                </Stack>
-                {!guess && (
-                  <Button
-                    onClick={() => {
-                      onGuess(xTeam, yTeam, i, j);
-                    }}
-                    sx={{
-                      background: "#7793d8",
-                      width: "100%",
-                      height: "100%",
-                      borderRadius: 0,
-                      "&:hover": {
-                        background: "#76e7f4",
-                      },
-                    }}
-                  />
-                )}
-              </Grid>
-            );
-          })
+                </Grid>
+              );
+            })
+          )}
+        {isLoadingGame && (
+          <CircularProgress
+            color="secondary"
+            size={70}
+            sx={{ gridArea: `xTeam1yTeam1` }}
+          />
         )}
       </div>
     </div>

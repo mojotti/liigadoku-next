@@ -184,48 +184,44 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
           date={dokuOfTheDay.date}
         />
       </Modal>
-      {isLoadingGame && <Typography variant="h6">{"Ladataan..."}</Typography>}
-      {!isLoadingGame && (
-        <>
-          <>
-            <GameGrid
-              xTeams={dokuOfTheDay?.xTeams ?? []}
-              yTeams={dokuOfTheDay?.yTeams ?? []}
-              onGuess={onGuessStart}
-              gameState={gameState}
-              date={dokuOfTheDay?.date}
-              gameOver={score.guesses === 9}
-            />
-            <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
-          </>
-          {score.guesses === 9 && (
-            <Stack gap={"1rem"}>
-              <Tooltip
-                title={
-                  <Typography variant="body2">
-                    {"Kopioitu leikepöydälle"}
-                  </Typography>
-                }
-                placement="top"
-                open={tooltipOpen}
-              >
-                <Button
-                  variant="contained"
-                  startIcon={<ShareIcon fontSize="small" />}
-                  onClick={() => {
-                    setTooltipOpen(true);
-                    navigator.clipboard.writeText(
-                      formatScoreText(gameState, score, dokuOfTheDay)
-                    );
-                    setTimeout(() => setTooltipOpen(false), 2000);
-                  }}
-                >
-                  <>{"Kopioi tulos"}</>
-                </Button>
-              </Tooltip>
-            </Stack>
-          )}
-        </>
+      <>
+        <GameGrid
+          xTeams={dokuOfTheDay?.xTeams ?? []}
+          yTeams={dokuOfTheDay?.yTeams ?? []}
+          onGuess={onGuessStart}
+          gameState={gameState}
+          date={dokuOfTheDay?.date}
+          gameOver={score.guesses === 9}
+          isLoadingGame={isLoadingGame}
+        />
+        <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
+      </>
+      {score.guesses === 9 && (
+        <Stack gap={"1rem"}>
+          <Tooltip
+            title={
+              <Typography variant="body2">
+                {"Kopioitu leikepöydälle"}
+              </Typography>
+            }
+            placement="top"
+            open={tooltipOpen}
+          >
+            <Button
+              variant="contained"
+              startIcon={<ShareIcon fontSize="small" />}
+              onClick={() => {
+                setTooltipOpen(true);
+                navigator.clipboard.writeText(
+                  formatScoreText(gameState, score, dokuOfTheDay)
+                );
+                setTimeout(() => setTooltipOpen(false), 2000);
+              }}
+            >
+              <>{"Kopioi tulos"}</>
+            </Button>
+          </Tooltip>
+        </Stack>
       )}
     </Stack>
   );
