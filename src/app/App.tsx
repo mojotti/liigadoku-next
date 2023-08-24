@@ -179,7 +179,6 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
           filteredPlayers={filteredPlayers}
           onPlayerClick={onPlayerClick}
           onFilter={onFilter}
-          isLoadingGameId={isLoadingGame}
           gameId={gameId}
           date={dokuOfTheDay.date}
         />
