@@ -1,4 +1,3 @@
-"use server";
 import { GuessStatsContextProvider } from "@/context/GuessStats";
 import { App } from "./App";
 import {
@@ -6,7 +5,6 @@ import {
   PlayerShortVersion,
   TeamPairPlayers,
 } from "@/types";
-import { restAPI } from "@/utils/base-url";
 
 const formMatchUps = (doku: LiigadokuOfTheDay) =>
   doku.xTeams
@@ -35,17 +33,23 @@ const initialDoku: LiigadokuOfTheDay = {
   yTeams: [],
 };
 
+export const runtime = "edge";
+
 async function getInitialData() {
-  const response = await fetch(`${restAPI()}players/all`, {
-    next: { revalidate: 24 * 3600 },
+  "use server";
+  const response = await fetch(`${process.env.REST_API_ENDPOINT}/players/all`, {
+    next: { revalidate: 24 * 60 * 60 },
   });
   const result = await response.json();
 
   const players = (result?.players ?? []) as PlayerShortVersion[];
 
-  const dokuResponse = await fetch(`${restAPI()}liigadoku-of-the-day`, {
-    next: { revalidate: 300 },
-  });
+  const dokuResponse = await fetch(
+    `${process.env.REST_API_ENDPOINT}/liigadoku-of-the-day`,
+    {
+      next: { revalidate: 10 * 60 },
+    }
+  );
   const dokuJson = (await dokuResponse.json()) ?? initialDoku;
 
   const matchUps = formMatchUps(dokuJson);
@@ -53,9 +57,12 @@ async function getInitialData() {
   const promises = matchUps.map((matchUp) => {
     const teams = matchUp.teams.join("-");
 
-    return fetch(`${restAPI()}players/team-pairs/${teams}`, {
-      next: { revalidate: 300 },
-    });
+    return fetch(
+      `${process.env.REST_API_ENDPOINT}/players/team-pairs/${teams}`,
+      {
+        next: { revalidate: 12 * 60 * 60 },
+      }
+    );
   });
 
   const respsRaw = await Promise.all(promises);
