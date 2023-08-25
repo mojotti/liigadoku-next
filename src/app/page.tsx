@@ -44,7 +44,7 @@ async function getInitialData() {
   const players = (result?.players ?? []) as PlayerShortVersion[];
 
   const dokuResponse = await fetch(`${restAPI()}liigadoku-of-the-day`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: 300 },
   });
   const dokuJson = (await dokuResponse.json()) ?? initialDoku;
 
@@ -54,7 +54,7 @@ async function getInitialData() {
     const teams = matchUp.teams.join("-");
 
     return fetch(`${restAPI()}players/team-pairs/${teams}`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 300 },
     });
   });
 
