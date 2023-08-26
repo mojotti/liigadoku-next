@@ -48,7 +48,6 @@ const initialScore = {
 
 export const App = ({ initialData }: { initialData: InitialData }) => {
   const { players, answers, dokuOfTheDay } = initialData;
-  const { fetchStats } = useGuessStatsContext();
 
   const [isLoadingLocal, setLoadingLocal] = React.useState(true);
 
@@ -75,12 +74,6 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
   });
 
   const [gameState, setGameState] = React.useState<GameState>({});
-
-  useEffect(() => {
-    if (dokuOfTheDay) {
-      fetchStats(dokuOfTheDay.date);
-    }
-  }, [dokuOfTheDay, fetchStats]);
 
   useEffect(() => {
     if (local) {

@@ -40,13 +40,11 @@ interface ContextProps {
     isCorrect,
     gameId,
   }: PutGuessParams) => Promise<void>;
-  fetchStats: (date: string) => void;
 }
 
 const GuessStatsContext = createContext<ContextProps>({
   stats: {},
   putGuess: (...args: any[]) => Promise.resolve(),
-  fetchStats: (date: string) => {},
 });
 
 const updateStats = (
@@ -81,31 +79,17 @@ const updateStats = (
   };
 };
 
-export const GuessStatsContextProvider: FC<PropsWithChildren> = ({
+export type GameStats = Record<string, TeamPairGuesses | undefined>;
+
+type Props = { gameStats: GameStats };
+
+export const GuessStatsContextProvider: FC<PropsWithChildren<Props>> = ({
   children,
+  gameStats,
 }) => {
   const [stats, setStats] = React.useState<
     Record<string, TeamPairGuesses | undefined>
-  >({});
-
-  const fetchStats = useCallback(async (date?: string) => {
-    if (!date) {
-      console.error("no date");
-      return;
-    }
-    const urlDate = date.replaceAll(".", "-");
-    const response = await fetch(`${restAPI()}guesses/by-date/${urlDate}`);
-    const result = (await response.json()) as TeamPairGuesses[];
-
-    const statsObject: Record<string, TeamPairGuesses | undefined> = {};
-
-    result.forEach((r) => {
-      const key = `${r.teamPair}-${date}`;
-      statsObject[key] = r;
-    });
-
-    setStats(statsObject);
-  }, []);
+  >(gameStats);
 
   const putGuess = async ({
     date,
@@ -136,7 +120,7 @@ export const GuessStatsContextProvider: FC<PropsWithChildren> = ({
   };
 
   return (
-    <GuessStatsContext.Provider value={{ putGuess, stats, fetchStats }}>
+    <GuessStatsContext.Provider value={{ putGuess, stats }}>
       {children}
     </GuessStatsContext.Provider>
   );

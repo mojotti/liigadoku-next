@@ -1,4 +1,8 @@
-import { GuessStatsContextProvider } from "@/context/GuessStats";
+import {
+  GameStats,
+  GuessStatsContextProvider,
+  TeamPairGuesses,
+} from "@/context/GuessStats";
 import { App } from "./App";
 import {
   LiigadokuOfTheDay,
@@ -25,6 +29,7 @@ export type InitialData = {
       person: string;
     }[]
   >;
+  gameStats: GameStats;
 };
 
 const initialDoku: LiigadokuOfTheDay = {
@@ -76,17 +81,46 @@ async function getInitialData() {
     answers[resp.teamPair] = resp.players;
   });
 
+  const date = dokuJson.date;
+
+  if (!date) {
+    console.error("no date");
+    return {
+      players,
+      dokuOfTheDay: dokuJson,
+      answers,
+      gameStats: {},
+    };
+  }
+
+  const urlDate = date.replaceAll(".", "-");
+  const guessesResponse = await fetch(
+    `${process.env.REST_API_ENDPOINT}/guesses/by-date/${urlDate}`,
+    {
+      next: { revalidate: 10 },
+    }
+  );
+  const guessesResult = (await guessesResponse.json()) as TeamPairGuesses[];
+
+  const gameStats: Record<string, TeamPairGuesses | undefined> = {};
+
+  guessesResult.forEach((r) => {
+    const key = `${r.teamPair}-${date}`;
+    gameStats[key] = r;
+  });
+
   return {
     players,
     dokuOfTheDay: dokuJson,
     answers,
+    gameStats,
   };
 }
 
 export default async function Home() {
   const initialData = await getInitialData();
   return (
-    <GuessStatsContextProvider>
+    <GuessStatsContextProvider gameStats={initialData.gameStats}>
       <App initialData={initialData} />
     </GuessStatsContextProvider>
   );
