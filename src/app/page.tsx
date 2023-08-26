@@ -118,10 +118,10 @@ async function getInitialData() {
 }
 
 export default async function Home() {
-  const initialData = await getInitialData();
+  const { gameStats, ...rest } = await getInitialData();
   return (
-    <GuessStatsContextProvider gameStats={initialData.gameStats}>
-      <App initialData={initialData} />
+    <GuessStatsContextProvider gameStats={gameStats}>
+      <App initialData={rest} />
     </GuessStatsContextProvider>
   );
 }

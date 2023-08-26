@@ -2,6 +2,8 @@
 "use client";
 import React, { useTransition } from "react";
 import Box from "@mui/material/Box";
+import CloseIcon from "@mui/icons-material/Close";
+import Stack from "@mui/material/Stack";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
@@ -12,6 +14,7 @@ import Typography from "@mui/material/Typography";
 import { PlayerShortVersion } from "@/types";
 import { CurrentGuess } from "@/app/App";
 import { putGuessAction } from "@/app/actions";
+import IconButton from "@mui/material/IconButton";
 
 function renderRow(
   props: ListChildComponentProps,
@@ -29,10 +32,6 @@ function renderRow(
       <ListItemButton
         onClick={() => {
           onPlayerClick(item);
-          const correctPersons =
-            currentGuess?.correctAnswers.map((p) => p.person) ?? [];
-          const isCorrect = correctPersons.includes(item.person);
-
           startTransition(() => {
             putGuessAction({
               gameId,
@@ -61,6 +60,7 @@ type Props = {
   currentGuess?: CurrentGuess;
   gameId?: string;
   date?: string;
+  close: () => void;
 };
 
 export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
@@ -73,6 +73,7 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
       onPlayerClick,
       gameId,
       date,
+      close,
     },
     ref
   ) => {
@@ -110,22 +111,35 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
         }}
       >
         {currentGuess && (
-          <>
-            <Typography
-              variant="h6"
-              sx={{ padding: "1rem 1rem 0 1rem" }}
-              color="rgb(19, 18, 18)"
+          <Stack flexDirection={"row"} justifyContent={"space-between"}>
+            <Stack flexDirection={"column"}>
+              <Typography
+                variant="h6"
+                sx={{ padding: "1rem 1rem 0 1rem" }}
+                color="rgb(19, 18, 18)"
+              >
+                {currentGuess.teams.join(" ja ")}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ fontStyle: "italic", padding: "0 1rem 0 1rem" }}
+                color="rgb(19, 18, 18)"
+              >
+                Vain Liiga-kaudet huomioidaan
+              </Typography>
+            </Stack>
+            <IconButton
+              sx={{
+                // background: "rgba(200, 210, 245, 0.223)",
+                height: "2rem",
+                width: "2rem",
+                margin: "1rem",
+              }}
+              onClick={close}
             >
-              {currentGuess.teams.join(" ja ")}
-            </Typography>
-            <Typography
-              variant="body2"
-              sx={{ fontStyle: "italic", padding: "0 1rem 0 1rem" }}
-              color="rgb(19, 18, 18)"
-            >
-              Vain Liiga-kaudet huomioidaan
-            </Typography>
-          </>
+              <CloseIcon />
+            </IconButton>
+          </Stack>
         )}
         <TextField
           id="outlined-basic"

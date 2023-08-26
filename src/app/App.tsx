@@ -46,7 +46,11 @@ const initialScore = {
   guesses: 0,
 };
 
-export const App = ({ initialData }: { initialData: InitialData }) => {
+export const App = ({
+  initialData,
+}: {
+  initialData: Omit<InitialData, "gameStats">;
+}) => {
   const { players, answers, dokuOfTheDay } = initialData;
 
   const [isLoadingLocal, setLoadingLocal] = React.useState(true);
@@ -143,8 +147,6 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
       };
       setLocal({ gameState: state, score: newScore });
       setOpen(false);
-      setOpen(false);
-      // do not wait on purpose
       putGuess({
         date: dokuOfTheDay?.date,
         guessedPlayer: player,
@@ -174,6 +176,7 @@ export const App = ({ initialData }: { initialData: InitialData }) => {
           onFilter={onFilter}
           gameId={gameId}
           date={dokuOfTheDay.date}
+          close={() => setOpen(false)}
         />
       </Modal>
       <>
