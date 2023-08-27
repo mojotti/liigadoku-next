@@ -97,7 +97,7 @@ async function getInitialData() {
   const guessesResponse = await fetch(
     `${process.env.REST_API_ENDPOINT}/guesses/by-date/${urlDate}`,
     {
-      next: { revalidate: 10 },
+      next: { revalidate: 15 },
     }
   );
   const guessesResult = (await guessesResponse.json()) as TeamPairGuesses[];
