@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
@@ -12,10 +12,10 @@ import { LiigadokuOfTheDay } from "@/types";
 
 const helpTexts = [
   "Tervetuloa pelaamaan Liigadokua!",
-  "Pelissä on tarkoituksena löytää ruutuun pelaaja, joka on pelannut molemmissa ruudun joukkueissa.",
-  "Joka päivä on tarjolla uusi peli ja uudet joukkueet.",
+  "Pelissä on tarkoituksena löytää jokaiseen ruutuun pelaaja, joka täyttää rivin ja sarakkeen asettamat kriteerit.",
   "Pelin jälkeen voit tutkia tilastoja sekä jakaa tuloksesi ja haastaa kaverisi peliin.",
-  "Huom! Liigadokussa huomioidaan vain joukkueen Liiga-kaudet. Esim. Jukureiden Mestis-ajan pelaajat eivät kelpaa vastaukseksi.",
+  "Huom! Liigadokussa huomioidaan vain joukkueen Liiga-kaudet. Esim. Jukureiden Mestis-ajan pelaajat eivät kelpaa vastaukseksi. Mukana on tilastot Liigan perustamisvuodesta 1975 lähtien.",
+  "Joka päivä on tarjolla uusi peli. Päivän peli on pelattavissa keskiyöllä Suomen aikaa.",
 ];
 
 export const Header = ({
