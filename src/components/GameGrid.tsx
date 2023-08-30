@@ -13,6 +13,7 @@ import { GameState, Guess } from "@/app/App";
 import CircularProgress from "@mui/material/CircularProgress";
 
 import Image from "next/image";
+import { getMilestoneDescription, isTeam } from "@/utils/teams";
 
 const getPictureUrl = (team: string) => {
   const teamNormalized = team.toLowerCase().replace(new RegExp(/ä/g), "a");
@@ -128,7 +129,10 @@ export const GameGrid = ({
               display: "flex",
             }}
           >
-            {getImg(xTeam)}
+            {isTeam(xTeam) && getImg(xTeam)}
+            {!isTeam(xTeam) && (
+              <Typography>{getMilestoneDescription(xTeam)}</Typography>
+            )}
           </Grid>
         ))}
 
@@ -142,7 +146,10 @@ export const GameGrid = ({
               display: "flex",
             }}
           >
-            {getImg(yTeam)}
+            {isTeam(yTeam) && getImg(yTeam)}
+            {!isTeam(yTeam) && (
+              <Typography>{getMilestoneDescription(yTeam)}</Typography>
+            )}
           </Grid>
         ))}
         {!isLoadingGame &&

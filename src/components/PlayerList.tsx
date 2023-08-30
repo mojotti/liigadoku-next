@@ -15,6 +15,7 @@ import { PlayerShortVersion } from "@/types";
 import { CurrentGuess } from "@/app/App";
 import { putGuessAction } from "@/app/actions";
 import IconButton from "@mui/material/IconButton";
+import { getItemText } from "@/utils/teams";
 
 function renderRow(
   props: ListChildComponentProps,
@@ -118,7 +119,7 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
                 sx={{ padding: "1rem 1rem 0 1rem" }}
                 color="rgb(19, 18, 18)"
               >
-                {currentGuess.teams.join(" ja ")}
+                {currentGuess.teams.map(getItemText).join(" ja ")}
               </Typography>
               <Typography
                 variant="body2"

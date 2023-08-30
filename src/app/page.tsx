@@ -48,6 +48,7 @@ async function getInitialData() {
   const result = await response.json();
 
   const players = (result?.players ?? []) as PlayerShortVersion[];
+  console.log({ playerslen: players.length });
 
   const dokuResponse = await fetch(
     `${process.env.REST_API_ENDPOINT}/liigadoku-of-the-day`,
@@ -56,6 +57,8 @@ async function getInitialData() {
     }
   );
   const dokuJson = (await dokuResponse.json()) ?? initialDoku;
+
+  console.log({ dokuJson });
 
   const matchUps = formMatchUps(dokuJson);
 
@@ -100,6 +103,7 @@ async function getInitialData() {
       next: { revalidate: 15 },
     }
   );
+
   const guessesResult = (await guessesResponse.json()) as TeamPairGuesses[];
 
   const gameStats: Record<string, TeamPairGuesses | undefined> = {};

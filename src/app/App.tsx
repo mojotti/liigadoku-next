@@ -95,6 +95,7 @@ export const App = ({
       }
 
       const correctAnswers = answers[[xTeam, yTeam].sort().join("-")];
+
       setCurrentGuess({
         gridItem: [x, y],
         teams: [xTeam, yTeam],
@@ -186,12 +187,12 @@ export const App = ({
           onGuess={onGuessStart}
           gameState={gameState}
           date={dokuOfTheDay?.date}
-          gameOver={score.guesses === 9}
+          gameOver={score.guesses >= 9}
           isLoadingGame={isLoadingGame}
         />
         <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
       </>
-      {score.guesses === 9 && (
+      {score.guesses >= 9 && (
         <Stack gap={"1rem"}>
           <Tooltip
             title={
