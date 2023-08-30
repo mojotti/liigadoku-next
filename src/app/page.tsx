@@ -100,7 +100,7 @@ async function getInitialData() {
   const guessesResponse = await fetch(
     `${process.env.REST_API_ENDPOINT}/guesses/by-date/${urlDate}`,
     {
-      next: { revalidate: 15 },
+      next: { revalidate: 5 },
     }
   );
 
