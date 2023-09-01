@@ -132,7 +132,9 @@ export const GameGrid = ({
           >
             {isTeam(xTeam) && getImg(xTeam)}
             {!isTeam(xTeam) && (
-              <Typography>{getMilestoneDescription(xTeam)}</Typography>
+              <Typography fontSize="14px">
+                {getMilestoneDescription(xTeam)}
+              </Typography>
             )}
           </Grid>
         ))}
@@ -149,7 +151,9 @@ export const GameGrid = ({
           >
             {isTeam(yTeam) && getImg(yTeam)}
             {!isTeam(yTeam) && (
-              <Typography>{getMilestoneDescription(yTeam)}</Typography>
+              <Typography fontSize="14px">
+                {getMilestoneDescription(yTeam)}
+              </Typography>
             )}
           </Grid>
         ))}
@@ -204,7 +208,11 @@ export const GameGrid = ({
                               .sort()
                               .join("-");
                             const teamPair = [xTeam, yTeam].join(" - ");
-                            setCurrentlyOpenStats({ sortedTeamPair, teamPair, teams: [xTeam, yTeam] });
+                            setCurrentlyOpenStats({
+                              sortedTeamPair,
+                              teamPair,
+                              teams: [xTeam, yTeam],
+                            });
                             setOpen(true);
                           }}
                           sx={{

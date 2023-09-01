@@ -83,8 +83,8 @@ export const App = ({
     if (local) {
       setScore(local.score);
       setGameState(local.gameState);
-      setLoadingLocal(false);
     }
+    setLoadingLocal(false);
   }, [local]);
 
   const onGuessStart = useCallback(
@@ -188,7 +188,7 @@ export const App = ({
           gameState={gameState}
           date={dokuOfTheDay?.date}
           gameOver={score.guesses >= 9}
-          isLoadingGame={isLoadingGame}
+          isLoadingGame={isLoadingGame || isLoadingLocal}
         />
         <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
       </>

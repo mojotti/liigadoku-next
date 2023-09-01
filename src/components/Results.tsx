@@ -14,7 +14,7 @@ import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import "./Results.css";
 import { TeamPairGuesses } from "@/context/GuessStats";
-import { getItemText } from "@/utils/teams";
+import { getItemTextShortVersion } from "@/utils/teams";
 
 type Props = {
   guesses?: TeamPairGuesses;
@@ -69,7 +69,7 @@ export const Results = React.forwardRef<HTMLDivElement, Props>(
           <Stack>
             <Stack alignItems="flex-start" px="1rem" pt="1rem">
               <Typography variant="h6" gridArea="name">
-                {teamPair.map(getItemText).join(" ja ")}
+                {teamPair.map(getItemTextShortVersion).join(" ja ")}
               </Typography>
             </Stack>
             <List>
