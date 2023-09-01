@@ -69,7 +69,8 @@ export const GameGrid = ({
   const [currentlyOpenStats, setCurrentlyOpenStats] = React.useState<{
     teamPair: string;
     sortedTeamPair: string;
-  }>({ teamPair: "", sortedTeamPair: "" });
+    teams: string[];
+  }>({ teamPair: "", sortedTeamPair: "", teams: [] });
   const [open, setOpen] = React.useState<boolean>(false);
 
   const { stats } = useGuessStatsContext();
@@ -114,7 +115,7 @@ export const GameGrid = ({
       >
         <Results
           guesses={currentResultList}
-          teamPair={currentlyOpenStats.teamPair}
+          teamPair={currentlyOpenStats.teams}
           onClose={() => setOpen(false)}
         />
       </Modal>
@@ -203,7 +204,7 @@ export const GameGrid = ({
                               .sort()
                               .join("-");
                             const teamPair = [xTeam, yTeam].join(" - ");
-                            setCurrentlyOpenStats({ sortedTeamPair, teamPair });
+                            setCurrentlyOpenStats({ sortedTeamPair, teamPair, teams: [xTeam, yTeam] });
                             setOpen(true);
                           }}
                           sx={{
