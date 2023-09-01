@@ -2,7 +2,7 @@
   background: rgb(2,0,36);
   background: linear-gradient(-135deg, rgb(2,0,36) 0%, rgb(11, 11, 94) 45%, rgb(85, 7, 137) 85%, rgb(18, 156, 184) 100%);
   color: #fffffff3;
-  height: 100vh;
+  height: 100%;
   
   padding: 0 1rem 2rem 1rem;
   text-align: center;
