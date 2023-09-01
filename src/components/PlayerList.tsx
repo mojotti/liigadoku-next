@@ -146,6 +146,8 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
           id="outlined-basic"
           label="Hae pelaajaa"
           variant="outlined"
+          autoComplete="off"
+          autoFocus
           value={searchText}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setSearchText(event.target.value);

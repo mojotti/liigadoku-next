@@ -17,12 +17,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="pageContainer">
       <head>
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
       </head>
 
-      <body className={inter.className}>
+      <body
+        className={inter.className}
+        style={{ height: "100%", width: "100%" }}
+      >
         {children}
         <Analytics />
       </body>
