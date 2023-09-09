@@ -39,11 +39,18 @@ export type Score = {
 type Local = {
   score: Score;
   gameState: GameState;
+  gameId: string;
 };
 
 const initialScore = {
   correctAnswers: 0,
   guesses: 0,
+};
+
+const initialLocal = {
+  score: initialScore,
+  gameState: {},
+  gameId: "",
 };
 
 export const App = ({
@@ -59,23 +66,31 @@ export const App = ({
     PlayerShortVersion[]
   >([]);
 
-  const [local, setLocal] = useLocalStorage<Local>(dokuOfTheDay?.date ?? "-");
+  const [local, setLocal] = useLocalStorage<Local>(
+    dokuOfTheDay?.date ?? "-",
+    initialLocal
+  );
 
   const { loading: isLoadingGame, value: gameId } = useAsync(async () => {
+    if (local?.gameId) {
+      console.log({ game: local.gameId });
+      return local.gameId;
+    }
     const urlDate = dokuOfTheDay.date.replaceAll(".", "-");
     const gameIdResponse = await fetch(`${restAPI()}games/new/${urlDate}`);
 
-    return (await gameIdResponse.json()).gameId as string;
+    const id = (await gameIdResponse.json()).gameId as string;
+
+    setLocal((l) => ({ ...l!, gameId: id }));
+
+    return id;
   }, [dokuOfTheDay.date]);
 
   const [currentGuess, setCurrentGuess] = React.useState<CurrentGuess>();
   const [open, setOpen] = React.useState(false);
   const [tooltipOpen, setTooltipOpen] = React.useState(false);
 
-  const [score, setScore] = React.useState<Score>({
-    correctAnswers: 0,
-    guesses: 0,
-  });
+  const [score, setScore] = React.useState<Score>(initialScore);
 
   const [gameState, setGameState] = React.useState<GameState>({});
 
@@ -146,7 +161,7 @@ export const App = ({
         correctAnswers: score.correctAnswers + +isCorrect,
         guesses: score.guesses + 1,
       };
-      setLocal({ gameState: state, score: newScore });
+      setLocal((l) => ({ ...l!, gameState: state, score: newScore }));
       setOpen(false);
       putGuess({
         date: dokuOfTheDay?.date,
