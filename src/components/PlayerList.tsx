@@ -16,6 +16,7 @@ import { CurrentGuess } from "@/app/App";
 import { putGuessAction } from "@/app/actions";
 import IconButton from "@mui/material/IconButton";
 import { getItemTextShortVersion } from "@/utils/teams";
+import { useMeasure } from "react-use";
 
 function renderRow(
   props: ListChildComponentProps,
@@ -80,6 +81,8 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
   ) => {
     let [isPending, startTransition] = useTransition();
 
+    const [measureRef, { height }] = useMeasure<HTMLDivElement>();
+
     const [searchText, setSearchText] = useState<string>("");
 
     const items =
@@ -112,7 +115,11 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
         }}
       >
         {currentGuess && (
-          <Stack flexDirection={"row"} justifyContent={"space-between"}>
+          <Stack
+            flexDirection={"row"}
+            justifyContent={"space-between"}
+            ref={measureRef}
+          >
             <Stack flexDirection={"column"}>
               <Typography
                 variant="h6"
@@ -131,7 +138,6 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
             </Stack>
             <IconButton
               sx={{
-                // background: "rgba(200, 210, 245, 0.223)",
                 height: "2rem",
                 width: "2rem",
                 margin: "1rem",
@@ -170,7 +176,7 @@ export const PlayerList = React.forwardRef<HTMLDivElement, Props>(
         {!hasNoHits && (
           <FixedSizeList
             itemData={items}
-            height={300}
+            height={450 - 50 - 32 - height} // total height - search - search vertical margins - header
             width={360}
             itemSize={65}
             itemCount={items.length}

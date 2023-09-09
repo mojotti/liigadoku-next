@@ -65,12 +65,11 @@ async function getInitialData() {
   const promises = matchUps.map((matchUp) => {
     const teams = matchUp.teams.join("-");
 
-    return fetch(
-      `${process.env.REST_API_ENDPOINT}/players/team-pairs/${teams}`,
-      {
-        next: { revalidate: 12 * 60 * 60 },
-      }
-    );
+    const teamPairUrl = `${process.env.REST_API_ENDPOINT}/players/team-pairs/${teams}`;
+    console.log({ teamPairUrl });
+    return fetch(teamPairUrl, {
+      next: { revalidate: 12 * 60 * 60 },
+    });
   });
 
   const respsRaw = await Promise.all(promises);
