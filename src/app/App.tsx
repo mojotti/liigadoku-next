@@ -18,6 +18,8 @@ import { useAsync, useLocalStorage } from "react-use";
 import { restAPI } from "@/utils/base-url";
 import { getUniqueness } from "@/utils/uniqueness";
 import { ScoreRow } from "@/components/ScoreRow";
+import useWindowSize from "react-use/lib/useWindowSize";
+import Confetti from "react-confetti";
 
 export type Guess = {
   status: boolean;
@@ -86,6 +88,10 @@ export const App = ({
     React.useState<number>(0);
 
   const { putGuess, stats } = useGuessStatsContext();
+
+  const [showConfetti, setShowConfetti] = React.useState(false);
+
+  const { width, height } = useWindowSize();
 
   useEffect(() => {
     if (local && dokuOfTheDay) {
@@ -163,12 +169,19 @@ export const App = ({
         isCorrect,
         gameId,
       });
+
+      if (newScore.guesses === 9) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 4000);
+      }
     },
     [currentGuess, setLocal, local, putGuess, dokuOfTheDay?.date, gameId]
   );
 
   return (
     <Stack className="container" alignItems="center" rowGap="1.5rem">
+      {showConfetti && <Confetti width={width} height={height} />}
+
       <Header dokuOfTheDay={dokuOfTheDay} />
 
       <Modal
