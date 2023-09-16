@@ -16,11 +16,14 @@ import { formatScoreText } from "@/utils/score-text";
 import { InitialData } from "./page";
 import { useAsync, useLocalStorage } from "react-use";
 import { restAPI } from "@/utils/base-url";
+import { getUniqueness } from "@/utils/uniqueness";
+import { ScoreRow } from "@/components/ScoreRow";
 
 export type Guess = {
   status: boolean;
   name: string;
   person: string;
+  teamPair: string;
 };
 
 export type GameState = Record<string, Guess>;
@@ -36,7 +39,7 @@ export type Score = {
   guesses: number;
 };
 
-type Local = {
+export type Local = {
   score: Score;
   gameState: GameState;
 };
@@ -44,6 +47,7 @@ type Local = {
 const initialScore = {
   correctAnswers: 0,
   guesses: 0,
+  uniqueness: 0,
 };
 
 export const App = ({
@@ -69,7 +73,7 @@ export const App = ({
   }, [dokuOfTheDay.date]);
 
   const [currentGuess, setCurrentGuess] = React.useState<CurrentGuess>();
-  const [open, setOpen] = React.useState(false);
+  const [playerListOpen, setPlayerListOpen] = React.useState(false);
   const [tooltipOpen, setTooltipOpen] = React.useState(false);
 
   const [score, setScore] = React.useState<Score>({
@@ -78,14 +82,19 @@ export const App = ({
   });
 
   const [gameState, setGameState] = React.useState<GameState>({});
+  const [uniquenessPercentage, setUniquenessPercentage] =
+    React.useState<number>(0);
+
+  const { putGuess, stats } = useGuessStatsContext();
 
   useEffect(() => {
-    if (local) {
+    if (local && dokuOfTheDay) {
       setScore(local.score);
       setGameState(local.gameState);
+      setUniquenessPercentage(getUniqueness(local, dokuOfTheDay, stats));
     }
     setLoadingLocal(false);
-  }, [local]);
+  }, [local, dokuOfTheDay, stats]);
 
   const onGuessStart = useCallback(
     (xTeam: string, yTeam: string, x: number, y: number) => {
@@ -101,9 +110,9 @@ export const App = ({
         teams: [xTeam, yTeam],
         correctAnswers,
       });
-      setOpen(true);
+      setPlayerListOpen(true);
     },
-    [answers, setCurrentGuess, setOpen]
+    [answers, setCurrentGuess, setPlayerListOpen]
   );
 
   const onFilter = useCallback(
@@ -117,12 +126,10 @@ export const App = ({
   );
 
   React.useEffect(() => {
-    if (!open) {
+    if (!playerListOpen) {
       setFilteredPlayers([]);
     }
-  }, [open, setFilteredPlayers]);
-
-  const { putGuess } = useGuessStatsContext();
+  }, [playerListOpen, setFilteredPlayers]);
 
   const onPlayerClick = useCallback(
     (player: PlayerShortVersion) => {
@@ -140,6 +147,7 @@ export const App = ({
           status: isCorrect,
           name: player.name,
           person: player.person,
+          teamPair: currentGuess.teams.sort().join("-"),
         },
       };
       const newScore = {
@@ -147,7 +155,7 @@ export const App = ({
         guesses: score.guesses + 1,
       };
       setLocal({ gameState: state, score: newScore });
-      setOpen(false);
+      setPlayerListOpen(false);
       putGuess({
         date: dokuOfTheDay?.date,
         guessedPlayer: player,
@@ -164,8 +172,8 @@ export const App = ({
       <Header dokuOfTheDay={dokuOfTheDay} />
 
       <Modal
-        open={open}
-        onClose={() => setOpen(false)}
+        open={playerListOpen}
+        onClose={() => setPlayerListOpen(false)}
         aria-labelledby="modal-player-list"
         aria-describedby="modal-all-players"
       >
@@ -177,7 +185,7 @@ export const App = ({
           onFilter={onFilter}
           gameId={gameId}
           date={dokuOfTheDay.date}
-          close={() => setOpen(false)}
+          close={() => setPlayerListOpen(false)}
         />
       </Modal>
       <>
@@ -190,7 +198,7 @@ export const App = ({
           gameOver={score.guesses >= 9}
           isLoadingGame={isLoadingGame || isLoadingLocal}
         />
-        <h2>{`Pisteet: ${score.correctAnswers}/9`}</h2>
+        <ScoreRow score={score} uniquenessPercentage={uniquenessPercentage} />
       </>
       {score.guesses >= 9 && (
         <Stack gap={"1rem"}>
@@ -209,7 +217,12 @@ export const App = ({
               onClick={() => {
                 setTooltipOpen(true);
                 navigator.clipboard.writeText(
-                  formatScoreText(gameState, score, dokuOfTheDay)
+                  formatScoreText(
+                    gameState,
+                    score,
+                    uniquenessPercentage,
+                    dokuOfTheDay
+                  )
                 );
                 setTimeout(() => setTooltipOpen(false), 2000);
               }}
