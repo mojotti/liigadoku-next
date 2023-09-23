@@ -32,6 +32,26 @@ export const getMilestoneDescription = (item: string) => {
       return "Ura: 500 jäähyminuuttia";
     case "200goals":
       return "Ura: 200 maalia";
+    case "50pointsSeason":
+      return "Kausi: 50 pistettä";
+    case "60pointsSeason":
+      return "Kausi: 60 pistettä";
+    case "40assistsSeason":
+      return "Kausi: 40 syöttöä";
+    case "35assistsSeason":
+      return "Kausi: 35 syöttöä";
+    case "30assistsSeason":
+      return "Kausi: 30 syöttöä";
+    case "100penaltyMinutesSeason":
+      return "Kausi: 100 jäähyminuuttia";
+    case "150penaltyMinutesSeason":
+      return "Kausi: 150 jäähyminuuttia";
+    case "30goalsSeason":
+      return "Kausi: 30 maalia";
+    case "25goalsSeason":
+      return "Kausi: 25 maalia";
+    case "20goalsSeason":
+      return "Kausi: 20 maalia";
     default:
       return "-";
   }
@@ -43,15 +63,35 @@ export const getItemText = (item: string) =>
 export const getMilestoneShortVersion = (item: string) => {
   switch (item) {
     case "400points":
-      return "400 pistettä";
+      return "Ura: 400 pistettä";
     case "600games":
-      return "600 ottelua";
+      return "Ura: 600 ottelua";
     case "300assists":
-      return "300 syöttöä";
+      return "Ura: 300 syöttöä";
     case "500penaltyMinutes":
-      return "500 min";
+      return "Ura: 500 min";
     case "200goals":
-      return "200 maalia";
+      return "Ura: 200 maalia";
+    case "50pointsSeason":
+      return "Kausi: 50 pistettä";
+    case "60pointsSeason":
+      return "Kausi: 60 pistettä";
+    case "40assistsSeason":
+      return "Kausi: 40 syöttöä";
+    case "35assistsSeason":
+      return "Kausi: 35 syöttöä";
+    case "30assistsSeason":
+      return "Kausi: 30 syöttöä";
+    case "100penaltyMinutesSeason":
+      return "Kausi: 100 min";
+    case "150penaltyMinutesSeason":
+      return "Kausi: 150 min";
+    case "30goalsSeason":
+      return "Kausi: 30 maalia";
+    case "25goalsSeason":
+      return "Kausi: 25 maalia";
+    case "20goalsSeason":
+      return "Kausi: 20 maalia";
     default:
       return "-";
   }
