@@ -1,6 +1,6 @@
 "use client";
 import { PlayerShortVersion } from "@/types";
-import { restAPI } from "@/utils/base-url";
+import { getRestAPI } from "@/utils/base-url";
 import React, {
   createContext,
   FC,
@@ -40,11 +40,15 @@ interface ContextProps {
     isCorrect,
     gameId,
   }: PutGuessParams) => Promise<void>;
+  getStats: (date: string) => Promise<void>;
+  isLoadingStats: boolean;
 }
 
 const GuessStatsContext = createContext<ContextProps>({
   stats: {},
   putGuess: (...args: any[]) => Promise.resolve(),
+  getStats: (date: string) => Promise.resolve(),
+  isLoadingStats: true,
 });
 
 const updateStats = (
@@ -81,15 +85,32 @@ const updateStats = (
 
 export type GameStats = Record<string, TeamPairGuesses | undefined>;
 
-type Props = { gameStats: GameStats };
-
-export const GuessStatsContextProvider: FC<PropsWithChildren<Props>> = ({
+export const GuessStatsContextProvider: FC<PropsWithChildren> = ({
   children,
-  gameStats,
 }) => {
   const [stats, setStats] = React.useState<
     Record<string, TeamPairGuesses | undefined>
-  >(gameStats);
+  >({});
+  const [isLoadingStats, setLoadingStats] = React.useState(true);
+
+  const getStats = useCallback(async (date: string) => {
+    const urlDate = date.replaceAll(".", "-");
+    const guessesResponse = await fetch(
+      `${getRestAPI()}/guesses/by-date/${urlDate}`
+    );
+
+    const guessesResult = (await guessesResponse.json()) as TeamPairGuesses[];
+
+    const stats: Record<string, TeamPairGuesses | undefined> = {};
+
+    guessesResult.forEach((r) => {
+      const key = `${r.teamPair}-${date}`;
+      stats[key] = r;
+    });
+
+    setStats(stats);
+    setLoadingStats(false);
+  }, []);
 
   const putGuess = async ({
     date,
@@ -120,7 +141,7 @@ export const GuessStatsContextProvider: FC<PropsWithChildren<Props>> = ({
   };
 
   return (
-    <GuessStatsContext.Provider value={{ putGuess, stats }}>
+    <GuessStatsContext.Provider value={{ getStats, putGuess, stats, isLoadingStats }}>
       {children}
     </GuessStatsContext.Provider>
   );

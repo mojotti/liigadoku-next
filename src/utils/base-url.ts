@@ -9,4 +9,4 @@ export const resolveBaseUrl = (): string => {
     : ["https://", url].join("");
 };
 
-export const restAPI = () => `${resolveBaseUrl()}/api/client/`;
+export const getRestAPI = () => `${resolveBaseUrl()}/api/client`;

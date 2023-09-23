@@ -1,5 +1,6 @@
 "use server";
-import { restAPI } from "@/utils/base-url";
+
+import { getRestAPI } from "@/utils/base-url";
 
 export const putGuessAction = async ({
   date,
@@ -34,12 +35,12 @@ export const putGuessAction = async ({
   const urlDate = date.replaceAll(".", "-");
 
   console.log(
-    `Invoking API: ${process.env.REST_API_ENDPOINT}/guesses/by-date-and-team-pair/${urlDate}/${teamPair}`
+    `Invoking API: ${getRestAPI()}/guesses/by-date-and-team-pair/${urlDate}/${teamPair}`
   );
 
   try {
     const resp = await fetch(
-      `${process.env.REST_API_ENDPOINT}/guesses/by-date-and-team-pair/${urlDate}/${teamPair}`,
+      `${getRestAPI()}/guesses/by-date-and-team-pair/${urlDate}/${teamPair}`,
       requestOptions
     );
     console.log({ status: resp.status });

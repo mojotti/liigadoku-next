@@ -84,11 +84,11 @@ export const GameGrid = ({
       const key = `${sortedTeamPair}-${date}`;
 
       if (!stats[key]) {
-        return "-";
+        return "100 %";
       }
 
       const numOfGuesses =
-        stats[key]?.guessedPlayers?.[guess.person]?.numOfGuesses || 0;
+        stats[key]?.guessedPlayers?.[guess.person]?.numOfGuesses ?? 1;
 
       const total = stats[key]?.totalGuesses ?? 1;
 

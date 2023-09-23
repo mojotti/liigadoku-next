@@ -23,6 +23,8 @@ const fetcher = async (
     req.url = url2;
     const url = new URL(url2);
 
+    req.headers.authorization = `Bearer ${process.env.REST_API_ACCESS_TOKEN}`;
+
     console.log(`Invoking API: ${url2}`);
 
     proxy.once("error", reject);

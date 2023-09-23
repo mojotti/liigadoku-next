@@ -7,6 +7,10 @@ export const getUniqueness = (
   dokuOfTheDay: LiigadokuOfTheDay,
   stats: Record<string, TeamPairGuesses | undefined>
 ): number => {
+  if (local.score.guesses === 0) {
+    return 0;
+  }
+
   const uniquenessTotal = Object.values(local.gameState).reduce((acc, curr) => {
     const key = `${curr.teamPair}-${dokuOfTheDay.date}`;
     const statsItem = stats[key];
@@ -15,7 +19,7 @@ export const getUniqueness = (
     }
 
     const numOfGuesses =
-      statsItem?.guessedPlayers?.[curr.person]?.numOfGuesses || 0;
+      statsItem?.guessedPlayers?.[curr.person]?.numOfGuesses ?? 1;
 
     const total = statsItem?.totalGuesses ?? 1;
 

@@ -9,6 +9,7 @@ import {
   PlayerShortVersion,
   TeamPairPlayers,
 } from "@/types";
+import { getRestAPI } from "@/utils/base-url";
 
 const formMatchUps = (doku: LiigadokuOfTheDay) =>
   doku.xTeams
@@ -42,7 +43,7 @@ export const runtime = "edge";
 
 async function getInitialData() {
   "use server";
-  const response = await fetch(`${process.env.REST_API_ENDPOINT}/players/all`, {
+  const response = await fetch(`${getRestAPI()}/players/all`, {
     next: { revalidate: 24 * 60 * 60 },
   });
   const result = await response.json();
@@ -51,7 +52,7 @@ async function getInitialData() {
   console.log({ playerslen: players.length });
 
   const dokuResponse = await fetch(
-    `${process.env.REST_API_ENDPOINT}/liigadoku-of-the-day`,
+    `${getRestAPI()}/liigadoku-of-the-day`,
     {
       next: { revalidate: 10 * 60 },
     }
@@ -65,7 +66,7 @@ async function getInitialData() {
   const promises = matchUps.map((matchUp) => {
     const teams = matchUp.teams.join("-");
 
-    const teamPairUrl = `${process.env.REST_API_ENDPOINT}/players/team-pairs/${teams}`;
+    const teamPairUrl = `${getRestAPI()}/players/team-pairs/${teams}`;
     console.log({ teamPairUrl });
     return fetch(teamPairUrl, {
       next: { revalidate: 12 * 60 * 60 },
@@ -91,40 +92,21 @@ async function getInitialData() {
       players,
       dokuOfTheDay: dokuJson,
       answers,
-      gameStats: {},
     };
   }
-
-  const urlDate = date.replaceAll(".", "-");
-  const guessesResponse = await fetch(
-    `${process.env.REST_API_ENDPOINT}/guesses/by-date/${urlDate}`,
-    {
-      next: { revalidate: 5 },
-    }
-  );
-
-  const guessesResult = (await guessesResponse.json()) as TeamPairGuesses[];
-
-  const gameStats: Record<string, TeamPairGuesses | undefined> = {};
-
-  guessesResult.forEach((r) => {
-    const key = `${r.teamPair}-${date}`;
-    gameStats[key] = r;
-  });
 
   return {
     players,
     dokuOfTheDay: dokuJson,
     answers,
-    gameStats,
   };
 }
 
 export default async function Home() {
-  const { gameStats, ...rest } = await getInitialData();
+  const initialData = await getInitialData();
   return (
-    <GuessStatsContextProvider gameStats={gameStats}>
-      <App initialData={rest} />
+    <GuessStatsContextProvider>
+      <App initialData={initialData} />
     </GuessStatsContextProvider>
   );
 }

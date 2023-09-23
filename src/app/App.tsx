@@ -15,7 +15,7 @@ import { GameGrid } from "@/components/GameGrid";
 import { formatScoreText } from "@/utils/score-text";
 import { InitialData } from "./page";
 import { useAsync, useLocalStorage } from "react-use";
-import { restAPI } from "@/utils/base-url";
+import { getRestAPI } from "@/utils/base-url";
 import { getUniqueness } from "@/utils/uniqueness";
 import { ScoreRow } from "@/components/ScoreRow";
 import useWindowSize from "react-use/lib/useWindowSize";
@@ -83,7 +83,7 @@ export const App = ({
       return local.gameId;
     }
     const urlDate = dokuOfTheDay.date.replaceAll(".", "-");
-    const gameIdResponse = await fetch(`${restAPI()}games/new/${urlDate}`);
+    const gameIdResponse = await fetch(`${getRestAPI()}/games/new/${urlDate}`);
 
     const id = (await gameIdResponse.json()).gameId as string;
 
@@ -102,11 +102,17 @@ export const App = ({
   const [uniquenessPercentage, setUniquenessPercentage] =
     React.useState<number>(0);
 
-  const { putGuess, stats } = useGuessStatsContext();
+  const { isLoadingStats, getStats, putGuess, stats } = useGuessStatsContext();
 
   const [showConfetti, setShowConfetti] = React.useState(false);
 
   const { width, height } = useWindowSize();
+
+  useEffect(() => {
+    if (dokuOfTheDay) {
+      getStats(dokuOfTheDay.date);
+    }
+  }, [dokuOfTheDay, getStats]);
 
   useEffect(() => {
     if (local && dokuOfTheDay) {
@@ -193,6 +199,8 @@ export const App = ({
     [currentGuess, setLocal, local, putGuess, dokuOfTheDay?.date, gameId]
   );
 
+  const isLoading = isLoadingGame || isLoadingLocal || isLoadingStats;
+
   return (
     <Stack className="container" alignItems="center" rowGap="1.5rem">
       {showConfetti && <Confetti width={width} height={height} />}
@@ -224,9 +232,11 @@ export const App = ({
           gameState={gameState}
           date={dokuOfTheDay?.date}
           gameOver={score.guesses >= 9}
-          isLoadingGame={isLoadingGame || isLoadingLocal}
+          isLoadingGame={isLoading}
         />
-        <ScoreRow score={score} uniquenessPercentage={uniquenessPercentage} />
+        {!isLoading && (
+          <ScoreRow score={score} uniquenessPercentage={uniquenessPercentage} />
+        )}
       </>
       {score.guesses >= 9 && (
         <Stack gap={"1rem"}>
