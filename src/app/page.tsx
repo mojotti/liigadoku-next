@@ -11,16 +11,6 @@ import {
 } from "@/types";
 import { getRestAPI } from "@/utils/base-url";
 
-const formMatchUps = (doku: LiigadokuOfTheDay) =>
-  doku.xTeams
-    .map((xTeam, i) =>
-      doku.yTeams.map((yTeam, j) => ({
-        key: `xTeam${i}yTeam${j}`,
-        teams: [xTeam, yTeam].sort(),
-      }))
-    )
-    .flat();
-
 export type InitialData = {
   players: PlayerShortVersion[];
   dokuOfTheDay: LiigadokuOfTheDay;
@@ -51,49 +41,21 @@ async function getInitialData() {
   const players = (result?.players ?? []) as PlayerShortVersion[];
   console.log({ playerslen: players.length });
 
-  const dokuResponse = await fetch(
-    `${getRestAPI()}/liigadoku-of-the-day`,
-    {
-      next: { revalidate: 10 * 60 },
-    }
-  );
+  const dokuResponse = await fetch(`${getRestAPI()}/liigadoku-of-the-day`, {
+    next: { revalidate: 10 * 60 },
+  });
   const dokuJson = (await dokuResponse.json()) ?? initialDoku;
 
-  console.log({ dokuJson });
+  const urlDate = dokuJson.date.replaceAll(".", "-");
 
-  const matchUps = formMatchUps(dokuJson);
-
-  const promises = matchUps.map((matchUp) => {
-    const teams = matchUp.teams.join("-");
-
-    const teamPairUrl = `${getRestAPI()}/players/team-pairs/${teams}`;
-    console.log({ teamPairUrl });
-    return fetch(teamPairUrl, {
+  const answersResp = await fetch(
+    `${getRestAPI()}/players/team-pairs/by-date/${urlDate}`,
+    {
       next: { revalidate: 12 * 60 * 60 },
-    });
-  });
+    }
+  );
 
-  const respsRaw = await Promise.all(promises);
-
-  const resps = (await Promise.all(
-    respsRaw.map((resp) => resp.json())
-  )) as TeamPairPlayers[];
-
-  const answers: Record<string, { person: string }[]> = {};
-  resps.forEach((resp) => {
-    answers[resp.teamPair] = resp.players;
-  });
-
-  const date = dokuJson.date;
-
-  if (!date) {
-    console.error("no date");
-    return {
-      players,
-      dokuOfTheDay: dokuJson,
-      answers,
-    };
-  }
+  const answers = await answersResp.json();
 
   return {
     players,
