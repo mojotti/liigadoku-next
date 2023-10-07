@@ -29,7 +29,7 @@ const initialDoku: LiigadokuOfTheDay = {
   yTeams: [],
 };
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 async function getInitialData() {
   "use server";
