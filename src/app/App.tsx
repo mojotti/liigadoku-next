@@ -79,7 +79,6 @@ export const App = ({
 
   const { loading: isLoadingGame, value: gameId } = useAsync(async () => {
     if (local?.gameId) {
-      console.log({ game: local.gameId });
       return local.gameId;
     }
     const urlDate = dokuOfTheDay.date.replaceAll(".", "-");

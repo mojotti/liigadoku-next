@@ -1,13 +1,11 @@
 import {
   GameStats,
   GuessStatsContextProvider,
-  TeamPairGuesses,
 } from "@/context/GuessStats";
 import { App } from "./App";
 import {
   LiigadokuOfTheDay,
   PlayerShortVersion,
-  TeamPairPlayers,
 } from "@/types";
 import { getRestAPI } from "@/utils/base-url";
 
