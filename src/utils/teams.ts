@@ -53,13 +53,13 @@ export const getMilestoneDescription = (item: string) => {
     case "20goalsSeason":
       return "Kausi: 20 maalia";
     case "5Teams":
-      return "Ura: väh. 5 joukkuetta";
+      return "Liiga: väh. 5 joukkuetta";
     case "6Teams":
-      return "Ura: väh .6 joukkuetta";
+      return "Liiga: väh. 6 joukkuetta";
     case "7Teams":
-      return "Ura: väh. 7 joukkuetta";
+      return "Liiga: väh. 7 joukkuetta";
     case "8Teams":
-      return "Ura: väh. 8 joukkuetta";
+      return "Liiga: väh. 8 joukkuetta";
     default:
       return "-";
   }
@@ -101,13 +101,13 @@ export const getMilestoneShortVersion = (item: string) => {
     case "20goalsSeason":
       return "Kausi: 20 maalia";
     case "5Teams":
-      return "Ura: 5 joukkuetta";
+      return "Liiga: väh. 5 joukkuetta";
     case "6Teams":
-      return "Ura: 6 joukkuetta";
+      return "Liiga: väh. 6 joukkuetta";
     case "7Teams":
-      return "Ura: 7 joukkuetta";
+      return "Liiga: väh. 7 joukkuetta";
     case "8Teams":
-      return "Ura: 8 joukkuetta";
+      return "Liiga: väh. 8 joukkuetta";
     default:
       return "-";
   }
