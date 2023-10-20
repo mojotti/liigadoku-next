@@ -60,6 +60,14 @@ export const getMilestoneDescription = (item: string) => {
       return "Liiga: väh. 7 joukkuetta";
     case "8Teams":
       return "Liiga: väh. 8 joukkuetta";
+    case "10Seasons":
+      return "Liiga: väh. 10 kautta";
+    case "12Seasons":
+      return "Liiga: väh. 12 kautta";
+    case "14Seasons":
+      return "Liiga: väh. 14 kautta";
+    case "15Seasons":
+      return "Liiga: väh. 15 kautta";
     default:
       return "-";
   }
@@ -108,6 +116,14 @@ export const getMilestoneShortVersion = (item: string) => {
       return "Liiga: väh. 7 joukkuetta";
     case "8Teams":
       return "Liiga: väh. 8 joukkuetta";
+    case "10Seasons":
+      return "Liiga: väh. 10 kautta";
+    case "12Seasons":
+      return "Liiga: väh. 12 kautta";
+    case "14Seasons":
+      return "Liiga: väh. 14 kautta";
+    case "15Seasons":
+      return "Liiga: väh. 15 kautta";
     default:
       return "-";
   }
