@@ -68,6 +68,8 @@ export const getMilestoneDescription = (item: string) => {
       return "Liiga: väh. 14 kautta";
     case "15Seasons":
       return "Liiga: väh. 15 kautta";
+    case "200plusMinus":
+      return "Liiga: plus-miinus 200+";
     default:
       return "-";
   }
@@ -124,6 +126,8 @@ export const getMilestoneShortVersion = (item: string) => {
       return "Liiga: väh. 14 kautta";
     case "15Seasons":
       return "Liiga: väh. 15 kautta";
+    case "200plusMinus":
+      return "Liiga: plus-miinus 200+";
     default:
       return "-";
   }
