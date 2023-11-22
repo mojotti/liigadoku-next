@@ -27,7 +27,7 @@ const initialDoku: LiigadokuOfTheDay = {
   yTeams: [],
 };
 
-export const runtime = "nodejs";
+export const runtime = "edge";
 
 async function getInitialData() {
   "use server";
@@ -40,7 +40,7 @@ async function getInitialData() {
   console.log({ playerslen: players.length });
 
   const dokuResponse = await fetch(`${getRestAPI()}/liigadoku-of-the-day`, {
-    next: { revalidate: 10 * 60 },
+    next: { revalidate: 30 * 60 },
   });
   const dokuJson = (await dokuResponse.json()) ?? initialDoku;
 
